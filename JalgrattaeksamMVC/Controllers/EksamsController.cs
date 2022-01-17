@@ -137,6 +137,7 @@ namespace JalgrattaeksamMVC.Controllers
         {
             var model = _context.Eksam.Select(e => new LubaViewModel()
             {
+                Id=e.Id,
                 Eesnimi = e.Eesnimi,
                 Perenimi = e.Perenimi,
                 Teooria = e.Teooria,
@@ -149,6 +150,38 @@ namespace JalgrattaeksamMVC.Controllers
             return View(await model.ToListAsync());
         }
 
+
+
+
+        // GET: Eksams/tänav
+        public async Task<IActionResult> VäljastaLuba(int Id)
+        {
+            var eksam = await _context.Eksam.FindAsync(Id);
+            if (eksam == null)
+            {
+                return NotFound();
+            }
+            eksam.Luba = 1;
+            try
+            {
+                _context.Update(eksam);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EksamExists(eksam.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+
+            }
+
+            return RedirectToAction("Luba");
+        }
 
 
 
